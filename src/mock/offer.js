@@ -12,6 +12,6 @@ const offersByType = POINT_TYPES.map((type) => ({
   offers: Array.from({ length: getRandomInteger(OFFERS.length)}, generateOffer)
 }));
 
-export const getOffersByType = () => offersByType;
+export const getOffers = () => offersByType;
 
 export const getOfferByCurrentPointType = (type) => offersByType.find((offer) => offer.type === type).offers;
