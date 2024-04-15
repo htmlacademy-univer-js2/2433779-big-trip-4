@@ -40,7 +40,7 @@ export default class PointEditView extends AbstractView{
       .addEventListener('click', this.#resetClickHandler);
 
     this.element
-      .querySelector('form')
+      .querySelector('.event--edit')
       .addEventListener('submit', this.#submitClickHandler);
   };
 }
