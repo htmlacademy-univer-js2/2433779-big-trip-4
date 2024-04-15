@@ -1,16 +1,15 @@
-import { createEventListTemplate } from '../templates/event-list-template.js';
+import { createTripListTemplate } from '../templates/trip-list-template.js';
 import { createElement } from '../render.js';
 
 export default class EventListView {
   getTemplate() {
-    return createEventListTemplate();
+    return createTripListTemplate();
   }
 
   getElement() {
     if(!this.element) {
       this.element = createElement(this.getTemplate());
     }
-
     return this.element;
   }
 

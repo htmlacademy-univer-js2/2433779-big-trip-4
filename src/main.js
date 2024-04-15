@@ -1,14 +1,21 @@
-import BoardPresenter from './presenter/board-presenter';
-import FilterView from './view/filter-view';
-import TripInfoView from './view/trip-info-view';
-import { render, RenderPosition } from './render';
+import PointsModel from './model/point-model';
+import TripPresenter from './presenter/trip-presenter';
+import DestinationModel from './model/destination-model';
+import OffersModel from './model/offer-model';
 
-const bodyElement = document.querySelector('body');
-const filterElement = bodyElement.querySelector('.trip-controls__filters');
-const tripInfoElement = document.querySelector('.trip-main');
-const boardContainer = document.querySelector('.trip-events');
-const boardPresenter = new BoardPresenter({container: boardContainer});
+const filterContainer = document.querySelector('.trip-controls__filters');
+const tripInfoContainer = document.querySelector('.trip-main');
+const eventsContainer = document.querySelector('.trip-events');
 
-render(new FilterView(), filterElement);
-render(new TripInfoView(), tripInfoElement, RenderPosition.AFTERBEGIN);
-boardPresenter.init();
+const container = {
+  filter: filterContainer,
+  tripInfo: tripInfoContainer,
+  events: eventsContainer
+};
+
+const destinationModel = new DestinationModel();
+const offersModel = new OffersModel();
+const pointsModel = new PointsModel({destinationModel, offersModel});
+const tripPresenter = new TripPresenter({container: container, pointsModel: pointsModel});
+
+tripPresenter.init();
