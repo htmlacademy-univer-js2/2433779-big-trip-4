@@ -15,7 +15,7 @@ const container = {
 
 const destinationModel = new DestinationModel();
 const offersModel = new OffersModel();
-const pointsModel = new PointsModel({destinationModel, offersModel});
-const tripPresenter = new TripPresenter({container: container, pointsModel: pointsModel});
+const pointsModel = new PointsModel();
+const tripPresenter = new TripPresenter({container: container, pointsModel: pointsModel, offerModel: offersModel, destinationModel: destinationModel});
 
 tripPresenter.init();

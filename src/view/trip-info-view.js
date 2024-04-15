@@ -1,23 +1,8 @@
-import { createTripInfoTemplate } from '../templates/trip-info-template.js';
-import { createElement } from '../render.js';
+import { createSortTemplate } from '../templates/sort-template.js';
+import AbstractView from '../framework/view/abstract-view';
 
-export default class TripInfoView {
-  constructor({points}) {
-    this.points = points;
-  }
-
-  getTemplate() {
-    return createTripInfoTemplate(this.points);
-  }
-
-  getElement() {
-    if(!this.element) {
-      this.element = createElement(this.getTemplate());
-    }
-    return this.element;
-  }
-
-  removeElement() {
-    this.element = null;
+export default class SortView extends AbstractView{
+  get template() {
+    return createSortTemplate();
   }
 }
