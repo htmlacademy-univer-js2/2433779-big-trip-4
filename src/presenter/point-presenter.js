@@ -2,22 +2,16 @@ import PointView from '../view/point-view';
 import EditFormView from '../view/point-edit-view';
 import { Mode } from '../consts';
 import { render, replace, remove } from '../framework/render';
-
 export default class PointPresenter {
   #pointListContainer = null;
-
   #mode = Mode.DEFAULT;
   #point = null;
-
   #destinationModel = null;
   #offerModel = null;
-
   #handleDataChange = null;
   #handleModeChange = null;
-
   #pointComponent = null;
   #editFormComponent = null;
-
   constructor({pointListContainer, destinationModel, offerModel, handleDataChange, handleModeChange}){
     this.#pointListContainer = pointListContainer;
     this.#destinationModel = destinationModel;
@@ -30,21 +24,20 @@ export default class PointPresenter {
     this.#point = point;
     const prevPointComponent = this.#pointComponent;
     const prevEditFormComponent = this.#editFormComponent;
-
     this.#pointComponent = new PointView({
       point: this.#point,
       offers: this.#offerModel.getOffersByType(this.#point.type),
       destination: this.#destinationModel.getDestinationById(point.destination),
-      onEditFormClick: this.#onEditFormClick,
-      onFavoriteClick: this.#onFavoriteClick
+      onEditFormClick: this.#editFormClickHandler,
+      onFavoriteClick: this.#favoriteClickHandler
     });
 
     this.#editFormComponent = new EditFormView({
       point: this.#point,
       offers: this.#offerModel.getOffersByType(point.type),
       destination: this.#destinationModel.getDestinationById(point.destination),
-      onEditFormReset: this.#onEditFormReset,
-      onEditFormSubmit: this.#onEditFormSubmit
+      onEditFormReset: this.#editFormResetHandler,
+      onEditFormSubmit: this.#editFormSubmitHandler
     });
 
     if (!prevPointComponent || !prevEditFormComponent) {
@@ -59,7 +52,6 @@ export default class PointPresenter {
     if (this.#mode === Mode.EDITING) {
       replace(this.#editFormComponent, prevEditFormComponent);
     }
-
     remove(prevEditFormComponent);
     remove(prevPointComponent);
   }
@@ -95,24 +87,24 @@ export default class PointPresenter {
     }
   };
 
-  #onFavoriteClick = () => {
+  #favoriteClickHandler = () => {
     this.#handleDataChange({
       ...this.#point,
       isFavorite: !this.#point.isFavorite,
     });
   };
 
-  #onEditFormClick = () => {
+  #editFormClickHandler = () => {
     this.#switchToEditForm();
     document.removeEventListener('keydown', this.escKeydownHandler);
   };
 
-  #onEditFormReset = () => {
+  #editFormResetHandler = () => {
     this.#switchToPoint();
     document.removeEventListener('keydown', this.escKeydownHandler);
   };
 
-  #onEditFormSubmit = () => {
+  #editFormSubmitHandler = () => {
     this.#switchToPoint();
     document.removeEventListener('keydown', this.escKeydownHandler);
   };

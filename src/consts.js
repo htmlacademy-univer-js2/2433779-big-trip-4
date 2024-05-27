@@ -6,7 +6,6 @@ import { isFutureDate, isPastDate, isPresentDate } from './utils';
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(duration);
-
 export const POINT_COUNT = Math.round(5 * Math.random());
 export const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
 export const DESTINATIONS = ['Amsterdam', 'Chamonix', 'Geneva', 'Paris', 'Saint Petersburg', 'Vienna'];
@@ -24,12 +23,12 @@ export const DESCRIPTIONS = ['Lorem ipsum dolor sit amet, consectetur adipiscing
   'In rutrum ac purus sit amet tempus.'];
 export const DATE = [
   {
-    from: '2024-03-18T10:30',
-    to: '2024-03-18T16:00'
+    from: '2024-03-16T10:30',
+    to: '2024-03-17T16:00'
   },
   {
-    from: '2024-03-18T16:20',
-    to: '2024-03-18T17:00'
+    from: '2024-06-10T16:20',
+    to: '2024-06-12T17:00'
   },
   {
     from: '2024-03-19T14:20',
@@ -44,10 +43,12 @@ export const DATE = [
     to: '2024-03-19T19:00'
   }
 ];
+
 export const PRICE = {
   min: 40,
   max: 3000
 };
+
 export const DEFAULT_POINT = {
   id: null,
   type: null,
@@ -57,12 +58,14 @@ export const DEFAULT_POINT = {
   offer: null,
   isFavorite: false,
 };
+
 export const TimePeriods = {
   HoursInDay: 24,
   MinInHour: 60,
   SecInHour: 60,
   MsecInSec: 1000
 };
+
 export const FilterType = {
   EVERYTHING: 'everything',
   FUTURE: 'future',
@@ -80,4 +83,20 @@ export const filter = {
 export const Mode = {
   DEFAULT: 'default',
   EDITING: 'editing',
+};
+
+export const SortType = {
+  DAY: 'day',
+  EVENT: 'event',
+  TIME: 'time',
+  PRICE: 'price',
+  OFFER: 'offer'
+};
+
+export const enabledSortType = {
+  [SortType.DAY]: true,
+  [SortType.EVENT]: false,
+  [SortType.TIME]: true,
+  [SortType.PRICE]: true,
+  [SortType.OFFER]: false,
 };
