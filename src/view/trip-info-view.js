@@ -5,7 +5,7 @@ export default class TripInfoView extends AbstractView{
   #points;
   #destinationModel;
 
-  constructor({points, destinationModel}) {
+  constructor(points, destinationModel) {
     super();
     this.#points = points;
     this.#destinationModel = destinationModel;
