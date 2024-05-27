@@ -76,3 +76,8 @@ export const filter = {
   [FilterType.PRESENT]: (points) => points.filter((point) => isPresentDate(point.dateFrom, point.dateTo)),
   [FilterType.PAST]: (points) => points.filter((point) => isPastDate(point.dateTo)),
 };
+
+export const Mode = {
+  DEFAULT: 'default',
+  EDITING: 'editing',
+};

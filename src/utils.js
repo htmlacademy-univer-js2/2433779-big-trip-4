@@ -24,3 +24,6 @@ export function isPresentDate(dateFrom, dateTo) {
   const now = dayjs();
   return now.isSameOrAfter(dateFrom) && now.isSameOrBefore(dateTo);
 }
+
+export const updateItem = (items, update) =>
+  items.map((item) => item.id === update.id ? update : item);
