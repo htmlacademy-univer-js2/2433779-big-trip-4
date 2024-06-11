@@ -11,14 +11,15 @@ export const generatePoint = () => {
   const offersId = getOfferByCurrentPointType(type).map((offer) => offer.id);
   const destinationId = getRandomDestination().id;
   const isFavorite = Boolean(getRandomInteger(1));
+
   return {
-    id: id,
-    basePrice: basePrice,
+    id,
+    basePrice,
     dateFrom: date.from,
     dateTo: date.to,
     destination: destinationId,
-    isFavorite: isFavorite,
+    isFavorite,
     offers: offersId,
-    type: type
+    type
   };
 };
