@@ -1,5 +1,5 @@
 import PointView from '../view/point-view';
-import EditFormView from '../view/point-edit-view';
+import EditFormView from '../view/edit-form-view';
 import { Mode } from '../consts';
 import { render, replace, remove } from '../framework/render';
 export default class PointPresenter {
@@ -34,8 +34,8 @@ export default class PointPresenter {
 
     this.#editFormComponent = new EditFormView({
       point: this.#point,
-      offers: this.#offerModel.getOffersByType(point.type),
-      destination: this.#destinationModel.getDestinationById(point.destination),
+      offers: this.#offerModel.getOffers(),
+      destinations: this.#destinationModel.getAllDestinations(),
       onEditFormReset: this.#editFormResetHandler,
       onEditFormSubmit: this.#editFormSubmitHandler
     });
@@ -58,6 +58,7 @@ export default class PointPresenter {
 
   resetView() {
     if (this.#mode === Mode.EDITING) {
+      this.#editFormComponent.reset(this.#point);
       this.#switchToPoint();
     }
   }
@@ -83,6 +84,7 @@ export default class PointPresenter {
   #onDocumentEscKeydown = (evt) => {
     if (evt.key === 'Escape' || evt.key === 'Esc') {
       evt.preventDefault();
+      this.#editFormComponent.reset(this.#point);
       this.#switchToPoint();
     }
   };
@@ -100,11 +102,13 @@ export default class PointPresenter {
   };
 
   #editFormResetHandler = () => {
+    this.#editFormComponent.reset(this.#point);
     this.#switchToPoint();
     document.removeEventListener('keydown', this.escKeydownHandler);
   };
 
-  #editFormSubmitHandler = () => {
+  #editFormSubmitHandler = (updatePoint) => {
+    this.#point = updatePoint;
     this.#switchToPoint();
     document.removeEventListener('keydown', this.escKeydownHandler);
   };
