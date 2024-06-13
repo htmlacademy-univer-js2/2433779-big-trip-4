@@ -1,17 +1,19 @@
 import { getOffers } from '../mock/offer';
+import Observable from '../framework/observable';
 
-export default class OffersModel {
+export default class OffersModel extends Observable{
   #offers = null;
 
   constructor() {
+    super();
     this.#offers = getOffers();
   }
 
-  getOffers() {
+  get() {
     return this.#offers;
   }
 
-  getOffersByType(type) {
+  getByType(type) {
     return this.#offers.find((offer) => (offer.type === type))?.offers;
   }
 }

@@ -4,7 +4,7 @@ import { getRandomDestination } from './destination.js';
 import { getOfferByCurrentPointType } from './offer.js';
 
 export const generatePoint = () => {
-  const id = getRandomInteger(1000);
+  const id = crypto.randomUUID();
   const basePrice = getRandomInteger(PRICE.min, PRICE.max);
   const date = getRandomArrayElement(DATE);
   const type = getRandomArrayElement(POINT_TYPES);
