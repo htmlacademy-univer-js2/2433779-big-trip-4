@@ -1,27 +1,26 @@
-import { SortType } from '../consts';
-import { enabledSortType } from '../consts';
+import { SortType , enabledSortType} from '../consts';
+import { render, remove } from '../framework/render';
 import SortView from '../view/sort-view';
-import { render } from '../framework/render';
 
 export default class SortPresenter {
   #sortContainer = null;
   #sortComponent = null;
+
   #handleSortTypeChange = null;
   #currentSortType = SortType.DAY;
 
-  constructor({ sortContainer, handleSortTypeChange }) {
+  constructor({ sortContainer, onSortChange, currentSortType }) {
     this.#sortContainer = sortContainer;
-    this.#handleSortTypeChange = handleSortTypeChange;
+    this.#handleSortTypeChange = onSortChange;
+    this.#currentSortType = currentSortType;
   }
 
   init() {
     const sortTypes = this.#renderSortTypes();
-
     this.#sortComponent = new SortView({
       items: sortTypes,
       onItemChange: this.#onSortChange,
     });
-
     render(this.#sortComponent, this.#sortContainer);
   }
 
@@ -35,8 +34,11 @@ export default class SortPresenter {
     if (this.#currentSortType === sortType) {
       return;
     }
-
     this.#currentSortType = sortType;
     this.#handleSortTypeChange(sortType);
   };
+
+  destroy() {
+    remove(this.#sortComponent);
+  }
 }

@@ -1,32 +1,35 @@
-import { createPointEditTemplate } from '../templates/point-edit-template.js';
-import { DEFAULT_POINT } from '../consts.js';
+import { DEFAULT_POINT, EditType } from '../consts.js';
+import { createPointEditFormTemplate } from '../templates/point-edit-form-template.js';
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
 
-export default class EditFormView extends AbstractStatefulView{
+
+export default class PointEditFormView extends AbstractStatefulView{
   #offers = null;
   #destinations = null;
-  #onEditFormReset = null;
-  #onEditFormSubmit = null;
-
+  #handleEditFormReset = null;
+  #handleEditFormSubmit = null;
+  #handleEditFormDelete = null;
+  #editFormType = null;
   #datepickerFrom = null;
   #datepickerTo = null;
 
-  constructor({point = DEFAULT_POINT, offers = [], destinations, onEditFormReset, onEditFormSubmit}) {
+  constructor({point = DEFAULT_POINT, offers, destinations, onPointEditFormReset, onPointEditFormSubmit, onPointEditFormDelete, pointEditType = EditType.EDITING}) {
     super();
     this.#offers = offers;
     this.#destinations = destinations;
-    this.#onEditFormReset = onEditFormReset;
-    this.#onEditFormSubmit = onEditFormSubmit;
+    this.#handleEditFormReset = onPointEditFormReset;
+    this.#handleEditFormSubmit = onPointEditFormSubmit;
+    this.#handleEditFormDelete = onPointEditFormDelete;
+    this.#editFormType = pointEditType;
 
-    this._setState(EditFormView.parsePointToState({point}));
+    this._setState(PointEditFormView.parsePointToState({point}));
     this._restoreHandlers();
   }
 
   removeElement = () => {
     super.removeElement();
-
     if (this.#datepickerFrom) {
       this.#datepickerFrom.destroy();
       this.#datepickerFrom = null;
@@ -40,22 +43,28 @@ export default class EditFormView extends AbstractStatefulView{
   reset = (point) => this.updateElement({ point });
 
   _restoreHandlers = () => {
+    if (this.#editFormType === EditType.EDITING) {
+      this.element
+        .querySelector('.event__rollup-btn')
+        .addEventListener('click', this.#resetClickHandler);
+      this.element
+        .querySelector('.event__reset-btn')
+        .addEventListener('click', this.#deleteClickHandler);
+    }
+    if (this.#editFormType === EditType.CREATING) {
+      this.element
+        .querySelector('.event__reset-btn')
+        .addEventListener('click', this.#resetClickHandler);
+    }
     this.element
       .querySelector('form')
       .addEventListener('submit', this.#submitClickHandler);
-
-    this.element
-      .querySelector('.event__rollup-btn')
-      .addEventListener('click', this.#resetClickHandler);
-
     this.element
       .querySelector('.event__type-group')
       .addEventListener('change', this.#typeChangeHandler);
-
     this.element
       .querySelector('.event__input--destination')
       .addEventListener('change', this.#destinationChangeHandler);
-
     this.element
       .querySelector('.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
@@ -67,60 +76,75 @@ export default class EditFormView extends AbstractStatefulView{
     this.#setDatepickerToHandler();
   };
 
+
   get template() {
-    return createPointEditTemplate(this._state.point, this.#offers, this.#destinations);
+    return createPointEditFormTemplate({
+      point: this._state.point,
+      pointOffers: this.#offers,
+      destinations: this.#destinations,
+      editPointType: this.#editFormType,
+    });
   }
 
   #tripPointDateFromChangeHandler = ([userDate]) => {
     this.updateElement({
-      dateFrom: userDate,
+      point: {
+        ...this._state.point,
+        dateFrom: userDate,
+      }
     });
   };
 
   #tripPointDateToChangeHandler = ([userDate]) => {
     this.updateElement({
-      dateTo: userDate,
+      point: {
+        ...this._state.point,
+        dateTo: userDate,
+      }
     });
   };
 
   #setDatepickerFromHandler = () => {
-    if (this._state.point.dateFrom) {
-      this.#datepickerFrom = flatpickr(
-        this.element.querySelector('#event-start-time-1'),
-        {
-          enableTime: true,
-          dateFormat: 'd/m/y H:i',
-          defaultDate: this._state.dateFrom,
-          maxDate: this._state.dateTo,
-          onChange: this.#tripPointDateFromChangeHandler,
-        },
-      );
-    }
+    this.#datepickerFrom = flatpickr(
+      this.element.querySelector('#event-start-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateFrom,
+        maxDate: this._state.dateTo,
+        minDate: null,
+        onChange: this.#tripPointDateFromChangeHandler,
+      },
+    );
   };
 
   #setDatepickerToHandler = () => {
-    if (this._state.point.dateTo) {
-      this.#datepickerTo = flatpickr(
-        this.element.querySelector('#event-end-time-1'),
-        {
-          enableTime: true,
-          dateFormat: 'd/m/y H:i',
-          defaultDate: this._state.dateTo,
-          minDate: this._state.dateFrom,
-          onChange: this.#tripPointDateToChangeHandler,
-        },
-      );
-    }
+    this.#datepickerTo = flatpickr(
+      this.element.querySelector('#event-end-time-1'),
+      {
+        enableTime: true,
+        dateFormat: 'd/m/y H:i',
+        defaultDate: this._state.dateTo,
+        minDate: this._state.dateFrom,
+        maxDate: null,
+        onChange: this.#tripPointDateToChangeHandler,
+      },
+    );
+  };
+
+  #deleteClickHandler = (evt) => {
+    evt.preventDefault();
+    this.#handleEditFormDelete(PointEditFormView.parseStateToPoint(this._state));
   };
 
   #resetClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onEditFormReset();
+    this.#handleEditFormReset();
   };
 
   #submitClickHandler = (evt) => {
     evt.preventDefault();
-    this.#onEditFormSubmit(EditFormView.parseStateToPoint(this._state));
+    this.#handleEditFormSubmit(PointEditFormView.parseStateToPoint(this._state));
   };
 
   #typeChangeHandler = (evt) => {
@@ -156,7 +180,6 @@ export default class EditFormView extends AbstractStatefulView{
   #offerChangeHandler = () => {
     const selectedOffers = Array.from(this.element.querySelectorAll('.event__offer-checkbox:checked'))
       .map(({id}) => id.split('-').slice(3).join('-'));
-
     this._setState({
       point: {
         ...this._state.point,

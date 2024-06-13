@@ -1,19 +1,23 @@
 import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
-import { SortType } from './consts';
+import { SortType, TimePeriods } from './consts';
+import { FilterType } from './consts';
 dayjs.extend(duration);
 
 export const getRandomArrayElement = (items) => items[Math.floor(Math.random() * items.length)];
-export const getRandomInteger = (max, min = 0) =>Math.round((max - min) * Math.random() + min);
-export function getTimeInHours(startTime, endTime) {
-  const hours = dayjs(endTime).diff(dayjs(startTime), 'hours');
-  return hours !== 0 ? `${hours }H` : '';
-}
 
-export function getTimeInMinutes(startTime, endTime) {
-  const minutes = dayjs(endTime).diff(dayjs(startTime), 'minutes') % 60;
-  return minutes !== 0 ? `${minutes }M` : '';
-}
+export const getRandomInteger = (max, min = 0) =>Math.round((max - min) * Math.random() + min);
+
+export const getPointDuration = (dateFrom, dateTo) => {
+  const pointDuration = dayjs(dateTo).diff(dayjs(dateFrom), 'minutes');
+
+  if (pointDuration >= TimePeriods.MinInDay) {
+    return dayjs.duration(pointDuration, 'minutes').format('DD[D] HH[H] mm[M]');
+  } else if (pointDuration >= TimePeriods.MinInHour) {
+    return dayjs.duration(pointDuration, 'minutes').format('HH[H] mm[M]');
+  }
+  return dayjs.duration(pointDuration, 'minutes').format('mm[M]');
+};
 
 export function isFutureDate(dateFrom) {
   return dayjs(dateFrom).isAfter(dayjs());
@@ -30,7 +34,6 @@ export function isPresentDate(dateFrom, dateTo) {
 
 export const updateItem = (items, update) =>
   items.map((item) => item.id === update.id ? update : item);
-
 const getPointsDateDifference = (pointA, pointB) => dayjs(pointA.dateFrom).diff(dayjs(pointB.dateFrom));
 const getPointsPriceDifference = (pointA, pointB) => pointB.basePrice - pointA.basePrice;
 const getPointsDurationDifference = (pointA, pointB) => {
@@ -50,4 +53,24 @@ export const sort = (points, sortType = SortType.DAY) => {
     throw new Error(`Sort by ${sortType} is not implemented`);
   }
   return sortMethod[sortType](points);
+};
+
+export const filter = {
+  [FilterType.EVERYTHING]: (points) => points,
+  [FilterType.FUTURE]: (points) => points.filter((point) => isFutureDate(point.dateFrom)),
+  [FilterType.PRESENT]: (points) => points.filter((point) => isPresentDate(point.dateFrom, point.dateTo)),
+  [FilterType.PAST]: (points) => points.filter((point) => isPastDate(point.dateTo)),
+};
+
+export const isMajorDifference = (pointA, pointB) => {
+  const aPointDuration = dayjs(pointA.dateTo).diff(dayjs(pointA.dateFrom));
+  const bPointDuration = dayjs(pointB.dateTo).diff(dayjs(pointB.dateFrom));
+  return pointA.dateFrom !== pointB.dateFrom ||
+  pointA.basePrice !== pointB.basePrice ||
+  aPointDuration !== bPointDuration;
+};
+
+export const getLastWord = (string) => {
+  const words = string.split(' ');
+  return words.at(-1);
 };

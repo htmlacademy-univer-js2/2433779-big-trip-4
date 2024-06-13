@@ -2,14 +2,18 @@ import dayjs from 'dayjs';
 import duration from 'dayjs/plugin/duration';
 import isSameOrAfter from 'dayjs/plugin/isSameOrAfter';
 import isSameOrBefore from 'dayjs/plugin/isSameOrBefore';
-import { isFutureDate, isPastDate, isPresentDate } from './utils';
 dayjs.extend(isSameOrBefore);
 dayjs.extend(isSameOrAfter);
 dayjs.extend(duration);
+
 export const POINT_COUNT = Math.round(5 * Math.random());
+
 export const POINT_TYPES = ['taxi', 'bus', 'train', 'ship', 'drive', 'flight', 'check-in', 'sightseeing', 'restaurant'];
+
 export const DESTINATIONS = ['Amsterdam', 'Chamonix', 'Geneva', 'Paris', 'Saint Petersburg', 'Vienna'];
+
 export const OFFERS = ['Add luggage', 'Switch to comfort class', 'Add meal', 'Choose seats', 'Travel by train'];
+
 export const DESCRIPTIONS = ['Lorem ipsum dolor sit amet, consectetur adipiscing elit.',
   'Cras aliquet varius magna, non porta ligula feugiat eget',
   'Fusce tristique felis at fermentum pharetra.',
@@ -21,6 +25,7 @@ export const DESCRIPTIONS = ['Lorem ipsum dolor sit amet, consectetur adipiscing
   'Aliquam erat volutpat.',
   'Nunc fermentum tortor ac porta dapibus.',
   'In rutrum ac purus sit amet tempus.'];
+
 export const DATE = [
   {
     from: '2024-03-16T10:30',
@@ -35,8 +40,8 @@ export const DATE = [
     to: '2024-03-19T15:00'
   },
   {
-    from: '2024-03-19T16:00',
-    to: '2024-03-19T17:00'
+    from: '2025-03-19T16:00',
+    to: '2025-03-19T17:00'
   },
   {
     from: '2024-03-19T18:00',
@@ -50,20 +55,18 @@ export const PRICE = {
 };
 
 export const DEFAULT_POINT = {
-  id: null,
-  type: null,
-  price: null,
-  date: null,
+  basePrice: 0,
+  dateFrom: null,
+  dateTo: null,
   destination: null,
-  offer: null,
   isFavorite: false,
+  offers: [],
+  type: 'flight',
 };
 
 export const TimePeriods = {
-  HoursInDay: 24,
   MinInHour: 60,
-  SecInHour: 60,
-  MsecInSec: 1000
+  MinInDay: 1440
 };
 
 export const FilterType = {
@@ -71,13 +74,6 @@ export const FilterType = {
   FUTURE: 'future',
   PRESENT: 'present',
   PAST: 'past',
-};
-
-export const filter = {
-  [FilterType.EVERYTHING]: (points) => points,
-  [FilterType.FUTURE]: (points) => points.filter((point) => isFutureDate(point.dateFrom)),
-  [FilterType.PRESENT]: (points) => points.filter((point) => isPresentDate(point.dateFrom, point.dateTo)),
-  [FilterType.PAST]: (points) => points.filter((point) => isPastDate(point.dateTo)),
 };
 
 export const Mode = {
@@ -99,4 +95,28 @@ export const enabledSortType = {
   [SortType.TIME]: true,
   [SortType.PRICE]: true,
   [SortType.OFFER]: false,
+};
+
+export const UpdateType = {
+  PATCH: 'PATCH',
+  MINOR: 'MINOR',
+  MAJOR: 'MAJOR'
+};
+
+export const UserAction = {
+  UPDATE_POINT: 'UPDATE',
+  ADD_POINT: 'ADD',
+  DELETE_POINT: 'DELETE',
+};
+
+export const EditType = {
+  EDITING: 'EDITING',
+  CREATING: 'CREATING',
+};
+
+export const EmptyListMessage = {
+  [FilterType.EVERYTHING]: 'Click New Event to create your first point',
+  [FilterType.FUTURE]: 'There are no future events now',
+  [FilterType.PRESENT]: 'There are no present events now',
+  [FilterType.PAST]: 'There are no past events now'
 };

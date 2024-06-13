@@ -1,12 +1,11 @@
 const createRouteElement = (points, destinationModel) => {
   const destinationIds = Array.from(points, (point) => (point.destination));
-  const destinationNames = destinationIds.map((destinationId) => (destinationModel.getDestinationById(destinationId))).map((destination) => destination.name);
+  const destinationNames = destinationIds.map((destinationId) => (destinationModel.getById(destinationId))).map((destination) => destination.name);
 
   return `<h1 class="trip-info__title">
     ${ destinationNames.map((name) => `${ name }`).join(' &mdash; ')}
   </h1>`;
 };
-
 export const createTripInfoTemplate = (points, destinationModel) => {
   const pointsCount = points.length;
   if (pointsCount > 0) {

@@ -1,1 +1,1 @@
-export const createEmptyPointListTemplate = () => '<p class="trip-events__msg">Создайте свою первую точку маршрута!</p>';
+export const createEmptyPointListTemplate = (message) => `<p class="trip-events__msg">${ message }</p>`;
