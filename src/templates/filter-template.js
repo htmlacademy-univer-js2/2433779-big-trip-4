@@ -1,4 +1,4 @@
-export const createFilterTemplate = ({filters}) => `
+export const createFilterTemplate = ({filters, currentFilter}) => `
   <form class="trip-filters" action="#" method="get">
     ${filters.map(({ type, isDisabled}) => `
       <div class="trip-filters__filter">
@@ -9,7 +9,8 @@ export const createFilterTemplate = ({filters}) => `
           name="trip-filter"
           value="${type}"
           data-item="${type}"
-          ${isDisabled ? 'disabled' : ''}>
+          ${isDisabled ? 'disabled' : ''}
+          ${type === currentFilter ? 'checked' : ''}>
         <label class="trip-filters__filter-label" for="filter-${type}">
           ${type}
         </label>

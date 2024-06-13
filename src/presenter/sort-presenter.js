@@ -5,10 +5,8 @@ import SortView from '../view/sort-view';
 export default class SortPresenter {
   #sortContainer = null;
   #sortComponent = null;
-
   #handleSortTypeChange = null;
   #currentSortType = SortType.DAY;
-
   constructor({ sortContainer, onSortChange, currentSortType }) {
     this.#sortContainer = sortContainer;
     this.#handleSortTypeChange = onSortChange;

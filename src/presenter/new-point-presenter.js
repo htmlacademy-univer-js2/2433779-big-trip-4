@@ -1,24 +1,18 @@
 import { RenderPosition, render, remove } from '../framework/render';
 import { UserAction, UpdateType, EditType } from '../consts';
-
 import PointEditFormView from '../view/point-edit-form-view';
 
 export default class NewPointPresenter {
   #newPointContainer = null;
   #newPointComponent = null;
-
   #destinationModel = null;
   #offersModel = null;
-
   #handleDataChange = null;
   #handleDestroy = null;
-
   constructor ({newPointContainer, destinationModel, offersModel, onDataChange, onDestroy}) {
     this.#newPointContainer = newPointContainer;
-
     this.#destinationModel = destinationModel;
     this.#offersModel = offersModel;
-
     this.#handleDataChange = onDataChange;
     this.#handleDestroy = onDestroy;
   }
@@ -33,10 +27,8 @@ export default class NewPointPresenter {
         onPointEditFormSubmit: this.#handlePointEditFormSubmit,
       });
     }
-
     render(this.#newPointComponent, this.#newPointContainer, RenderPosition.AFTERBEGIN);
     document.addEventListener('keydown', this.#escKeyDownHandler);
-
   };
 
   destroy = ({isCanceled = true} = {}) => {
@@ -44,10 +36,8 @@ export default class NewPointPresenter {
       return;
     }
     remove(this.#newPointComponent);
-
     this.#newPointComponent = null;
     this.#handleDestroy({isCanceled});
-
     document.removeEventListener('keydown', this.#escKeyDownHandler);
   };
 
@@ -57,8 +47,6 @@ export default class NewPointPresenter {
       UpdateType.MINOR,
       point
     );
-
-    this.destroy({ isCanceled: false });
   };
 
   #handlePointEditFormClose = () => {
@@ -70,5 +58,28 @@ export default class NewPointPresenter {
       evt.preventDefault();
       this.destroy();
     }
+  };
+
+  setSaving = () => {
+    this.#newPointComponent.updateElement({
+      networkState: {
+        isDisabled: true,
+        isSaving: true,
+      }
+    });
+  };
+
+  setAborting = () => {
+    this.#newPointComponent.shake(this.#resetFormState);
+  };
+
+  #resetFormState = () => {
+    this.#newPointComponent.updateElement({
+      networkState: {
+        isDisabled: false,
+        isSaving: false,
+        isDeleting: false,
+      }
+    });
   };
 }

@@ -3,8 +3,6 @@ import { createPointEditFormTemplate } from '../templates/point-edit-form-templa
 import AbstractStatefulView from '../framework/view/abstract-stateful-view.js';
 import flatpickr from 'flatpickr';
 import 'flatpickr/dist/flatpickr.min.css';
-
-
 export default class PointEditFormView extends AbstractStatefulView{
   #offers = null;
   #destinations = null;
@@ -14,7 +12,6 @@ export default class PointEditFormView extends AbstractStatefulView{
   #editFormType = null;
   #datepickerFrom = null;
   #datepickerTo = null;
-
   constructor({point = DEFAULT_POINT, offers, destinations, onPointEditFormReset, onPointEditFormSubmit, onPointEditFormDelete, pointEditType = EditType.EDITING}) {
     super();
     this.#offers = offers;
@@ -23,8 +20,12 @@ export default class PointEditFormView extends AbstractStatefulView{
     this.#handleEditFormSubmit = onPointEditFormSubmit;
     this.#handleEditFormDelete = onPointEditFormDelete;
     this.#editFormType = pointEditType;
-
-    this._setState(PointEditFormView.parsePointToState({point}));
+    const networkState = {
+      isDisabled: false,
+      isSaving: false,
+      isDeleting: false
+    };
+    this._setState({point, networkState});
     this._restoreHandlers();
   }
 
@@ -41,7 +42,6 @@ export default class PointEditFormView extends AbstractStatefulView{
   };
 
   reset = (point) => this.updateElement({ point });
-
   _restoreHandlers = () => {
     if (this.#editFormType === EditType.EDITING) {
       this.element
@@ -68,18 +68,16 @@ export default class PointEditFormView extends AbstractStatefulView{
     this.element
       .querySelector('.event__input--price')
       .addEventListener('change', this.#priceChangeHandler);
-
     this.element
       .querySelector('.event__available-offers')
-      .addEventListener('change', this.#offerChangeHandler);
+      ?.addEventListener('change', this.#offerChangeHandler);
     this.#setDatepickerFromHandler();
     this.#setDatepickerToHandler();
   };
 
-
   get template() {
     return createPointEditFormTemplate({
-      point: this._state.point,
+      state: this._state,
       pointOffers: this.#offers,
       destinations: this.#destinations,
       editPointType: this.#editFormType,
@@ -110,9 +108,8 @@ export default class PointEditFormView extends AbstractStatefulView{
       {
         enableTime: true,
         dateFormat: 'd/m/y H:i',
-        defaultDate: this._state.dateFrom,
-        maxDate: this._state.dateTo,
-        minDate: null,
+        defaultDate: this._state.point.dateFrom,
+        maxDate: this._state.point.dateTo,
         onChange: this.#tripPointDateFromChangeHandler,
       },
     );
@@ -124,9 +121,8 @@ export default class PointEditFormView extends AbstractStatefulView{
       {
         enableTime: true,
         dateFormat: 'd/m/y H:i',
-        defaultDate: this._state.dateTo,
-        minDate: this._state.dateFrom,
-        maxDate: null,
+        defaultDate: this._state.point.dateTo,
+        minDate: this._state.point.dateFrom,
         onChange: this.#tripPointDateToChangeHandler,
       },
     );
@@ -134,7 +130,7 @@ export default class PointEditFormView extends AbstractStatefulView{
 
   #deleteClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleEditFormDelete(PointEditFormView.parseStateToPoint(this._state));
+    this.#handleEditFormDelete(this._state.point);
   };
 
   #resetClickHandler = (evt) => {
@@ -144,7 +140,7 @@ export default class PointEditFormView extends AbstractStatefulView{
 
   #submitClickHandler = (evt) => {
     evt.preventDefault();
-    this.#handleEditFormSubmit(PointEditFormView.parseStateToPoint(this._state));
+    this.#handleEditFormSubmit(this._state.point);
   };
 
   #typeChangeHandler = (evt) => {
@@ -187,6 +183,18 @@ export default class PointEditFormView extends AbstractStatefulView{
       }
     });
   };
+
+  get isDisabled() {
+    return this._state.networkState.isDisabled;
+  }
+
+  get isSaving() {
+    return this._state.networkState.isDisabled;
+  }
+
+  get isDeleting() {
+    return this._state.networkState.isDeleting;
+  }
 
   static parsePointToState = ({ point }) => ({ point });
   static parseStateToPoint = (state) => state.point;

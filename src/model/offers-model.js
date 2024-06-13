@@ -1,12 +1,17 @@
-import { getOffers } from '../mock/offer';
 import Observable from '../framework/observable';
 
 export default class OffersModel extends Observable{
-  #offers = null;
+  #offers = [];
+  #service = null;
 
-  constructor() {
+  constructor({service}) {
     super();
-    this.#offers = getOffers();
+    this.#service = service;
+  }
+
+  async init() {
+    this.#offers = await this.#service.getOffers();
+    return this.#offers;
   }
 
   get() {
